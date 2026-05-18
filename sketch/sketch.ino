@@ -5,6 +5,11 @@
 ModulinoThermo thermo;
 ModulinoDistance distance;
 
+ModulinoMovement movement;
+
+float x, y, z;
+float roll, pitch, yaw;
+
 const int SEUIL_MM = 800;
 const unsigned long COOLDOWN_MS = 10000;  // 1 Max notifications every 10 s
 unsigned long lastSendMs = 0;
@@ -16,6 +21,7 @@ void setup() {
 
   thermo.begin();
   distance.begin();
+  movement.begin();
 }
 
 void loop() {
@@ -35,9 +41,28 @@ void loop() {
 
     Bridge.call("update_sensors", tempC, tempF, hum);
 
-    Monitor.print("tempC="); Monitor.print(tempC, 2);
+    Monitor.print("tempC=");  Monitor.print(tempC, 2);
     Monitor.print(" tempF="); Monitor.print(tempF, 2);
-    Monitor.print(" hum="); Monitor.println(hum, 2);
+    Monitor.print(" hum=");   Monitor.println(hum, 2);
+
+    movement.update();
+
+    // Get acceleration and gyroscope values
+    x = movement.getX();
+    y = movement.getY();
+    z = movement.getZ();
+    roll = movement.getRoll();
+    pitch = movement.getPitch();
+    yaw = movement.getYaw();
+
+    Bridge.call("update_movement_sensors", x, y, z, roll, pitch, yaw);
+
+    Monitor.print("A: ");    Monitor.print(x, 3);
+    Monitor.print(", ");     Monitor.print(y, 3);
+    Monitor.print(", ");     Monitor.print(z, 3);
+    Monitor.print(" | G: "); Monitor.print(roll, 1);
+    Monitor.print(", ");     Monitor.print(pitch, 1);
+    Monitor.print(", ");     Monitor.println(yaw, 1);
   }
 
   // 2) Detection presence via distance (20 ms)
