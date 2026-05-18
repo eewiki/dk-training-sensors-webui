@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>UNO Q - Capteurs</title>
+<title>UNO Q - Sensors</title>
 <style>
   body { font-family: system-ui, -apple-system, Arial, sans-serif; padding: 16px; }
   .box { border: 1px solid #ddd; border-radius: 12px; padding: 12px; max-width: 560px; }
@@ -19,9 +19,9 @@
   <div class="box">
     <div class="row"><span class="k">Date / time</span><span class="v" id="now">-</span></div>
     <div class="row"><span class="k">Last presence</span><span class="v" id="presence">-</span></div>
-    <div class="row"><span class="k">Temperature</span><span class="v" id="temp">-</span></div>
-    <div class="row"><span class="k">Humidite</span><span class="v" id="hum">-</span></div>
-    <div class="row"><span class="k">Light</span><span class="v" id="lux">-</span></div>
+    <div class="row"><span class="k">Temperature C </span><span class="v" id="tempC">-</span></div>
+    <div class="row"><span class="k">Temperature F </span><span class="v" id="tempF">-</span></div>
+    <div class="row"><span class="k">Humidity</span><span class="v" id="hum">-</span></div>
   </div>
 
 <script>
@@ -57,14 +57,15 @@ async function refresh() {
     document.getElementById("presence").textContent =
       fmtPresence(s.last_presence_utc, s.last_presence_mm);
 
-    document.getElementById("temp").textContent =
-      (s.temp == null) ? "-" : (s.temp.toFixed(2) + " C");
+    document.getElementById("tempC").textContent =
+      (s.tempC == null) ? "-" : (s.tempC.toFixed(2) + " C");
+
+    document.getElementById("tempF").textContent =
+      (s.tempF == null) ? "-" : (s.tempF.toFixed(2) + " F");
 
     document.getElementById("hum").textContent =
       (s.hum == null) ? "-" : (s.hum.toFixed(2) + " %");
 
-    document.getElementById("lux").textContent =
-      (s.lux == null) ? "-" : (s.lux + " lux");
   } catch (e) {
     // ignore
   }

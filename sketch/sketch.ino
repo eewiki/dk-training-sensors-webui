@@ -2,12 +2,11 @@
 #include <Arduino_RouterBridge.h>
 #include <Arduino_Modulino.h>
 
-ModulinoLight light;
 ModulinoThermo thermo;
 ModulinoDistance distance;
 
-const int SEUIL_MM = 800;                 // presence si < 80 cm
-const unsigned long COOLDOWN_MS = 10000;  // 1 notif max toutes les 10 s
+const int SEUIL_MM = 800;
+const unsigned long COOLDOWN_MS = 10000;  // 1 Max notifications every 10 s
 unsigned long lastSendMs = 0;
 
 void setup() {
@@ -15,28 +14,29 @@ void setup() {
   Monitor.begin();
   Modulino.begin();
 
-  light.begin();
   thermo.begin();
   distance.begin();
 }
 
 void loop() {
-  // 1) Capteurs periodiques (1 Hz)
+  // 1) Periodic Sensors (1 Hz)
   static unsigned long lastSensorsMs = 0;
   unsigned long now = millis();
 
   if (now - lastSensorsMs >= 1000) {
     lastSensorsMs = now;
 
-    light.update();
-    int lux = light.getAL();
-    float temp = thermo.getTemperature();
+    float tempC = thermo.getTemperature();
+
+    // We have to force float everywhere here to convert
+    float tempF = ((float)tempC * 9.0f / 5.0f) + 32.0f;
+
     float hum  = thermo.getHumidity();
 
-    Bridge.call("update_sensors", lux, temp, hum);
+    Bridge.call("update_sensors", tempC, tempF, hum);
 
-    Monitor.print("lux="); Monitor.print(lux);
-    Monitor.print(" temp="); Monitor.print(temp, 2);
+    Monitor.print("tempC="); Monitor.print(tempC, 2);
+    Monitor.print(" tempF="); Monitor.print(tempF, 2);
     Monitor.print(" hum="); Monitor.println(hum, 2);
   }
 
